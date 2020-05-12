@@ -3,12 +3,16 @@
 #include <hal/hal.h>
 #include <SPI.h>
 #include <TinyGPS++.h>
+#include "DHT.h"
+
+#define DHTPIN 10
+#define DHTTYPE DHT22
 
 //must open debug window if ture
 //once debug is done set to false
 #define debug false
 
-static uint8_t payload[6];
+static uint8_t payload[9];
 static osjob_t sendjob;
 
 const unsigned TX_INTERVAL = 30;
@@ -137,6 +141,7 @@ void onEvent (ev_t ev) {
 }
 
 TinyGPSPlus gps;
+DHT dht(DHTPIN, DHTTYPE);
 
 void do_send(osjob_t* j) {
   
@@ -167,8 +172,19 @@ void do_send(osjob_t* j) {
         payload[4] = payloadLng >> 8;
         payload[5] = payloadLng >> 16;
       }
+
     }
 
+    uint32_t payloadTemp;
+    float temperature = dht.readTemperature(true);
+    if (debug)Serial.print("Temperature: "); 
+    if (debug)Serial.println(temperature);
+    //overkill for temp
+    payloadTemp = temperature * 1000;
+    payload[6] = payloadTemp;
+    payload[7] = payloadTemp >> 8;
+    payload[8] = payloadTemp >> 16;
+    
     LMIC_setTxData2(1, payload, sizeof(payload), 0);
 
   }
@@ -179,7 +195,7 @@ void setup() {
   if (debug) while (!Serial);
   if (debug)Serial.begin(57600);
   if (debug)Serial.println(F("Starting"));
-
+  dht.begin();
   Serial1.begin(9600);
 
   os_init();
