@@ -22,11 +22,12 @@
     npm install geojson
     zip index.js and node_modules
     upload to s3 bucket
+    import into lambda
+
+    runs some tests in Lambda console to make sure it working
 
     you'll need an api gateway -> single post method with
     LAMBDA_PROXY integration
-
-    runs some tests in Lambda console to make sure it working
 
     add The Things Network http integration to your api gateway endpoint
 

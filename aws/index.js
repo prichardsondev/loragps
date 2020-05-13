@@ -91,9 +91,6 @@ exports.handler = async event => {
 };
 
 function duplicateCoords(data,coords){
-    for (var i=0; i<data.length; i++) 
-        if (JSON.stringify(data[i]) 
-            === JSON.stringify(coords) ) 
-                return true;
-         
+    return data.some(c => JSON.stringify(c) 
+        === JSON.stringify(coords));      
 }
